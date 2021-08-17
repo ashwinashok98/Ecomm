@@ -10,6 +10,32 @@ const config = {
   appId: "1:594940764766:web:1ed7f20aba0ae586a0cacf",
   measurementId: "G-0PN0PYY25V",
 };
+export const createUserProfileDocument = async (userAuth,additionalData)=>{
+
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+  
+  const snapShot = await userRef.get();
+
+  if(!snapShot.exists) { 
+    const{displayName,email} = userAuth;
+    const createdAt = new Date();
+
+    try{
+      await userRef.set({
+        displayName,
+        email,
+        createdAt,
+        ...additionalData
+      })
+    }catch(error){
+     console.log('Error createing user', error.message);
+  }
+     
+  } 
+
+  return userRef;
+}
+
 firebase.initializeApp(config);
 export const auth= firebase.auth();
 export const firestore= firebase.firestore();
